@@ -1,0 +1,10 @@
+duckdb
+pandas
+yfinance
+requests
+streamlit
+plotly
+tenacity
+pytest
+python-dateutil
+pytz
