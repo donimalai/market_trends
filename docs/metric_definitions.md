@@ -69,3 +69,33 @@ The amber band is inclusive on its upper bound (2.0× itself is amber) and red i
 1. **90-day trailing mean:** simple average, not smoothed/weighted.
 2. **Warm-up nulls:** left as actual nulls in the data (not backfilled or estimated) for all four metrics; a dashboard chart should simply start rendering from the first non-null point rather than showing a fabricated early value.
 3. **Annualisation convention:** 252 trading days/year, as stated in Section 3 — standard market convention, confirmed.
+
+---
+
+## Summary table (quick reference)
+
+| Metric | Window | What it measures | Why this window |
+|---|---|---|---|
+| Rolling avg volume | 20 trading days (~1 calendar month) | Smoothed daily ASX 200 trading volume — a proxy for market participation/liquidity | Not specified in the case study brief. Chosen as a common ~monthly convention: long enough to absorb single-day noise, short enough to stay responsive within a 90-day view. |
+| Rate of change | 1 day (day-over-day) | % change in ASX 200 close price vs. the previous trading day | Simplest "is the market up or down" signal — deliberately the shortest window, so it's immediately readable. |
+| 14-day volatility (annualised) | 14 trading days | Standard deviation of daily log returns, annualised (× √252) | The one window the case study brief specifies explicitly ("a 14 day volatility measure"). |
+| RAG signal | Derived: 14-day volatility vs. its own 90-day trailing average | Green/Amber/Red traffic light on relative market turbulence | Self-relative (not a fixed number) so it flags regime shifts rather than needing an external "normal" baseline; 90 days chosen as a market-relevant trailing context window. |
+
+Three different, deliberately non-redundant time horizons: 14 days (short-term risk), 20 days (monthly participation trend), 90 days (longer regime baseline).
+
+## Assumptions made (flag for confirmation if any look wrong)
+
+1. **Rolling average volume window = 20 trading days** — a judgment call, not specified in the brief (see table above).
+2. **RAG boundaries** — Green ≤1.5×, Amber >1.5× and ≤2.0×, Red >2.0× of the 90-day trailing volatility average.
+3. **RAG warm-up** — no signal produced until ~104 trading days of history exist (14 + 90 stacked).
+4. **RAG near-zero guard** — reports "insufficient signal" instead of a ratio when the 90-day trailing volatility average falls below 3% annualised.
+5. **Annualisation convention** — 252 trading days/year (market-standard, not case-study-specified).
+6. **90-day trailing mean** — simple average, not weighted or smoothed.
+7. **Warm-up nulls** — left as real nulls, never backfilled or estimated.
+8. **`cash_rate` = RBA "Cash Rate Target"**, not "Interbank Overnight Cash Rate" — the two track closely but aren't identical; Cash Rate Target is what's actually announced/reported as "the cash rate."
+9. **Single macro overlay** — RBA cash rate only, per the case study's "your macro data series" (singular); CPI was considered and intentionally left out to keep scope to one macro parameter.
+10. **ASX 200 source** — Yahoo Finance (`^AXJO`), a free public feed, not a paid/licensed exchange data source.
+11. **ASX 200 lookback** — 220 calendar days, sized so the RAG warm-up (104 trading days) clears with margin plus a gap-free 90-day dashboard view.
+12. **Completeness checks are business-day-based** — a missing weekday is reported as a gap; there's no external public-holiday calendar to distinguish an expected closure from a real data gap.
+13. **`^AXJO` timestamps are already tz-aware `Australia/Sydney`** — verified live, not assumed; stated because it's the opposite of yfinance's usual UTC/US-Eastern behavior for other tickers.
+14. **Dashboard "past 90 days" = the last 90 trading rows**, not the last 90 calendar days.
