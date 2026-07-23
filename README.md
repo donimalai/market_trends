@@ -5,9 +5,7 @@ alongside the RBA cash rate, for financially literate but non-technical
 management. Built as a case study for a Data & Analytics Engineering Lead
 role — data as infrastructure, not a one-off report.
 
-**Repo:** private by design (no LICENSE file — this is a case study
-submission, not an open-source release; the case study doesn't require a
-public repo). [github.com/donimalai/market_trends](https://github.com/donimalai/market_trends)
+**Repo:** [github.com/donimalai/market_trends](https://github.com/donimalai/market_trends) (public).
 
 **Dashboard:** run locally via `streamlit run src/dashboard/app.py` (see Run Instructions below) — no hosted link for this submission.
 
@@ -25,22 +23,115 @@ Services context.
 
 ## Setup
 
+Step-by-step, for someone setting this up on a machine for the first time.
+
+**Prerequisites**
+- Python 3.10 or later (`python3 --version` to check)
+- `git`
+- No database server, cloud account, or API key needed — everything runs
+  locally against a single file.
+
+**1. Clone the repo**
+
 ```bash
-python -m venv .venv && source .venv/bin/activate
+git clone https://github.com/donimalai/market_trends.git
+cd market_trends
+```
+
+**2. Create and activate a virtual environment**
+
+macOS / Linux:
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+Windows (PowerShell):
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+```
+
+Your terminal prompt should now show `(.venv)` at the start of the line —
+that confirms the environment is active. Every command below assumes it's
+active; if you open a new terminal, re-run the activation step (not the
+`venv` creation step — that only needs to happen once).
+
+**3. Install dependencies**
+
+```bash
 pip install -r requirements.txt
 ```
 
+This installs `duckdb`, `pandas`, `yfinance`, `requests`, `streamlit`,
+`plotly`, `tenacity`, `pytest`, `python-dateutil`, and `pytz` into the
+virtual environment — nothing is installed system-wide.
+
 ## Run Instructions
+
+**1. Run the full pipeline** — pulls both sources live, builds every layer
+(raw → silver → mart → metrics), and prints a stage-by-stage summary:
 
 ```bash
 python run_pipeline.py
+```
+
+Expect this to take under a minute. It ends with a `DQ Log Summary` block
+listing every stage's outcome — look for `Totals: {'success': 8}` (or
+similar) with no `failure` entries. This creates `data/warehouse.duckdb`
+(gitignored, rebuilt every run) — nothing to configure, it just appears.
+
+**2. Launch the dashboard**
+
+```bash
 streamlit run src/dashboard/app.py
 ```
 
-`run_pipeline.py` runs the full 6-stage chain end-to-end (extraction ->
-raw -> silver -> mart -> metrics) and prints a DQ summary; the dashboard
-then reads the result. To demo the failure-handling path instead:
-`python scripts/simulate_failure.py`.
+This opens automatically in your browser at `http://localhost:8501`. Three
+pages, in the left sidebar:
+- **Market overview** — the required 90-day view: price/volume, macro
+  overlay against the RBA cash rate, and the RAG volatility signal.
+- **Data statistics & quality** — live pipeline/table stats and the latest
+  result of every data-quality check.
+- **Appendix** — a plain-language explainer for the measures, thresholds,
+  and assumptions behind the dashboard.
+
+Stop it with `Ctrl+C` in the terminal it's running in.
+
+**Optional — demo the failure-handling path** (breaks each extractor
+deliberately, shows the retry → clean failure → DQ-logged behavior):
+```bash
+python scripts/simulate_failure.py
+```
+
+**Optional — run the test suite:**
+```bash
+python -m pytest tests/ -v
+```
+
+### Troubleshooting
+
+- **`streamlit: command not found`** — the virtual environment isn't
+  active, or dependencies weren't installed into it. Re-run
+  `source .venv/bin/activate` (macOS/Linux) or
+  `.venv\Scripts\Activate.ps1` (Windows), then confirm with
+  `which streamlit` (macOS/Linux) / `where.exe streamlit` (Windows). If
+  that still comes up empty, re-run `pip install -r requirements.txt`. You
+  can also always fall back to `python -m streamlit run src/dashboard/app.py`,
+  which works without `streamlit` being on your PATH at all.
+- **`IO Error: Could not set lock on file "data/warehouse.duckdb"`** — a
+  DuckDB file only allows one writer at a time. This almost always means
+  another terminal still has a `duckdb` CLI session or a previous
+  `run_pipeline.py`/`streamlit` process open against the same file. Find
+  and close it: `lsof data/warehouse.duckdb` (macOS/Linux) lists the
+  process holding it; close that terminal or `kill <PID>`, then retry.
+- **Port 8501 already in use** — another Streamlit instance (maybe from an
+  earlier session) is already running. Either reuse it (just open
+  `http://localhost:8501`) or run this one on a different port:
+  `streamlit run src/dashboard/app.py --server.port 8502`.
+- **Dashboard shows stale-looking data** — the dashboard doesn't
+  auto-refresh from the source; re-run `python run_pipeline.py`, then
+  reload the browser tab.
 
 ## Architecture
 
@@ -58,7 +149,10 @@ curated.*    -- star schema: dim_date + fact_market_daily + fact_macro_daily
         |      + fact_metrics_daily, joined into the two required wide
         |      tables (aligned_daily, metrics_daily) -- see docs/mart_data_model.md
         v
-src/dashboard/app.py  -- reads ONLY curated.metrics_daily
+src/dashboard/app.py  -- 3-page app (see app_pages/): Market overview reads
+                          ONLY curated.metrics_daily; Data statistics &
+                          quality reads dq_log/dq_validation_log + row
+                          counts across all layers; Appendix is static.
 ```
 
 Layer separation exists so each stage can be re-run, tested, and debugged
