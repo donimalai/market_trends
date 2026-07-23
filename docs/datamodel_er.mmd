@@ -1,0 +1,50 @@
+---
+id: 2df4c1b7-9c59-4076-b17c-ccc1003bd8e8
+---
+erDiagram
+    dim_date ||--o{ fact_market_daily : "date"
+    dim_date ||--o{ fact_macro_daily : "date"
+    dim_date ||--o{ fact_metrics_daily : "date"
+    fact_market_daily ||--|| fact_macro_daily : "date"
+    fact_market_daily ||--|| fact_metrics_daily : "date"
+
+    dim_date {
+        date date PK
+        int year
+        int quarter
+        int month
+        varchar month_name
+        int week_of_year
+        int day_of_week
+        varchar day_name
+        boolean is_month_end
+        boolean is_quarter_end
+    }
+    fact_market_daily {
+        date date PK,FK
+        double open
+        double high
+        double low
+        double close
+        bigint volume
+        timestamp source_load_date
+    }
+    fact_macro_daily {
+        date date PK,FK
+        double cash_rate
+        timestamp source_load_date
+    }
+    fact_metrics_daily {
+        date date PK,FK
+        double rolling_avg_volume_20d
+        double rate_of_change_pct
+        double volatility_14d_annualised
+        double volatility_90d_trailing_mean
+        varchar rag_signal
+    }
+    fact_daily_long {
+        date date
+        varchar metric_category
+        varchar metric_name
+        double metric_value
+    }
