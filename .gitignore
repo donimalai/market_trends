@@ -16,3 +16,4 @@ data/curated/*.parquet
 
 # Streamlit
 .streamlit/
+presentation/node_modules/
