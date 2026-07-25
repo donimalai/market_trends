@@ -1,6 +1,6 @@
 # Speaker script — Market Intelligence Platform
 
-Target: 20 minutes total, including one live demo section — this script runs to about 20:15 with no slack, so know it well enough to compress on the fly rather than speed-read. Timings are cumulative. If you're running over at a checkpoint, trim Slide 3's pipeline description or Slide 5's bug-detail depth first — both are useful context but not graded evidence on their own. Never cut or rush Slide 8 (AI reflection), Slide 9 (review/handoff model — this is where "iterative design" and "how you'd hand off work" actually get answered with evidence, not asserted), Slide 11 (real stakeholder influence — your direct answer to the influencing gap the panel is testing for), or the demo.
+Target: 20 minutes total, including one live demo section — this script runs to about 20:30 with no slack, so know it well enough to compress on the fly rather than speed-read. Timings are cumulative. If you're running over at a checkpoint, trim Slide 3's pipeline description or Slide 5's bug-detail depth first — both are useful context but not graded evidence on their own. Never cut or rush Slide 8 (AI reflection), Slide 9 (your leadership operating model — architect, hands-on engineer, quality gate, coach — this is the direct answer to "how would you build and lead the team," not just delegate to it), Slide 11 (real stakeholder influence — your direct answer to the influencing gap the panel is testing for), or the demo.
 
 Plain-language rule throughout: no function names, no library names, no code. If a senior manager would ask "what does that mean," say it the way you'd answer them, not the way you'd write it in a commit message.
 
@@ -118,13 +118,17 @@ Plain-language rule throughout: no function names, no library names, no code. If
 
 ---
 
-## Slide 9 — Team & standards (13:30–15:45)
+## Slide 9 — Team & standards (13:30–16:00)
 
-> How this broke down day to day: I owned source and metric selection, threshold judgment calls, rubric compliance against the actual brief, metric definitions written *before* any code, and the modelling standards — what "raw" actually has to mean. The agent owned scaffolding, implementation once a spec was approved, test-writing against a locked spec, and running against real data, reporting actual numbers back, not just "it ran."
+> I want to be direct about what "lead" means here, because it isn't "I'd manage and delegate." As lead, I'm accountable for the standard — clear design up front, hands-on involvement where the risk is highest, and guardrails that let analysts, engineers, and AI agents deliver safely at pace. That's four modes, not one.
 >
-> Review here wasn't one pass. The traffic-light rule went through three revisions — a first draft, a boundary and near-zero-denominator fix once I spotted a real failure mode, then a lookback fix after running it against real data and finding it returned zero populated rows out of a hundred and three — computed with no errors, just empty. Every one of those came from checking actual output, not re-reading code.
+> Architect: I define the data model, the layer boundaries, the metric definitions, and the acceptance criteria before code starts. The raw, silver, curated split and every metric definition in this build were mine — decided before anyone touched implementation, not proposed by whoever happened to be building it.
 >
-> That's also the handoff model. Every schema-level decision — metric definitions, then the data model underneath the dashboard — went through a written proposal, signed off before code: the artifact I'd hand a new hire or a new agent to onboard onto this codebase. And when a second agent session started working the same repo mid-build, I split file ownership explicitly rather than risk both writing to the same files — the same coordination problem you'd have with two engineers on one codebase.
+> Hands-on engineer: I build or co-build the highest-risk parts myself — source contracts, transformation logic, DQ controls, the dashboard's actual semantics. Here that meant directing the fix when the raw layer wasn't actually raw, and personally sizing the RAG lookback window, not just approving someone else's fix after the fact.
+>
+> Quality gate: I review output from analysts, engineers, and agents the same way — against correctness, real data, and a definition of done — before anything is accepted. That's the same bar that caught two real data-quality bugs and a signal that ran with zero errors but returned zero rows.
+>
+> Coach and scale-enabler: I build reusable patterns, design docs, and guardrails so a team delivers consistently without tribal knowledge. The design-doc-before-code gate isn't just a personal habit — it's the actual onboarding artifact, and it's exactly how I split file ownership the moment a second contributor started working the same repo mid-build.
 >
 > One trade-off I want to name directly, because you asked me to be ready to discuss these: I prioritized depth on data quality — the checks, the quarantine mechanism, a proven worked example — over breadth. A more flexible reporting layer stayed a design document instead of working code. I made that call because a wrong number shown to management costs a lot more than a missing nice-to-have feature. Different context, different call — but that's the reasoning, and I'd defend it.
 
@@ -132,7 +136,7 @@ Plain-language rule throughout: no function names, no library names, no code. If
 
 ---
 
-## Slide 10 — If I had more time (15:45–16:45)
+## Slide 10 — If I had more time (16:00–17:00)
 
 > Two things, ranked, not four — because a list without a ranking isn't actually a plan.
 >
@@ -146,7 +150,7 @@ Plain-language rule throughout: no function names, no library names, no code. If
 
 ---
 
-## Slide 11 — Real stakeholder influence (16:45–18:45)
+## Slide 11 — Real stakeholder influence (17:00–19:00)
 
 > Everything so far has been this pipeline. I want to close with two examples of the same thinking applied to actual people, not just data — because that's a different skill, and I want to be direct about having used it.
 >
@@ -160,7 +164,7 @@ Plain-language rule throughout: no function names, no library names, no code. If
 
 ---
 
-## Slide 12 — Closing (18:45–20:15)
+## Slide 12 — Closing (19:00–20:30)
 
 > Zoom out for a second on what this scales to. Same standard, larger canvas: real-time metrics leaders actually use, not manual reporting. Analytics built into every product from day one, not bolted on after. Data that drives decisions, not decorates them.
 >

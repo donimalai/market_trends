@@ -90,6 +90,49 @@ st.markdown(
     "quality** tab for the live, current numbers behind all of this."
 )
 
+st.subheader("The 13 checks, in full")
+st.dataframe(
+    {
+        "Dataset": ["RBA Cash Rate"] * 6 + ["ASX 200"] * 7,
+        "Check": [
+            "completeness",
+            "valid_range",
+            "internal_consistency",
+            "freshness",
+            "no_duplicates",
+            "unusual_movement",
+            "completeness",
+            "valid_values",
+            "internal_consistency",
+            "no_duplicates",
+            "freshness",
+            "index_composition",
+            "missing_or_zero_close",
+        ],
+        "What it verifies": [
+            "Every RBA business day has a record — gaps are flagged, not assumed benign",
+            "Cash Rate Target sits within 0–15% and moves in multiples of 0.05%",
+            "The recorded \"Change in the Cash Rate Target\" matches the actual difference from the previous rate",
+            "Most recent record is no more than ~3 calendar days old",
+            "No effective date appears twice with conflicting rate values",
+            "Flags single-day rate moves bigger than 0.50% (unusual, not necessarily wrong)",
+            "Every ASX200 business day has a record — gaps are flagged (most are public holidays)",
+            "Low ≤ Open/Close/High; High ≥ Open/Close/Low; Close > 0; Volume ≥ 0",
+            "Flags a day-over-day price change bigger than 15%",
+            "No trading date appears twice with conflicting OHLCV values",
+            "Latest record is no more than 1 business day behind today",
+            "Number of companies in the index — **not applicable**: the current source (Yahoo Finance OHLCV) carries no constituent-count field, logged explicitly rather than silently skipped",
+            "Close price is not missing or zero on a trading day",
+        ],
+    },
+    hide_index=True,
+    width="stretch",
+)
+st.caption(
+    "6 checks on RBA Cash Rate, 7 on ASX 200 — 13 total. Source: `src/transform/silver_builder.py` "
+    "(`_validate_rba` / `_validate_asx200`), logged live to `dq_validation_log` on every pipeline run."
+)
+
 st.header("Market overview: design choices worth knowing")
 st.markdown(
     "**KPI row + bottom-line summary** — the four cards (latest close, N-day change, "

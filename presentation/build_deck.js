@@ -342,37 +342,37 @@ function sectionHeader(slide, iconFile, title, subtitle) {
 {
   const s = pres.addSlide();
   s.background = { color: WHITE };
-  sectionHeader(s, "users.png", "What I owned vs. what the agent owned", "Team & standards");
+  sectionHeader(s, "users.png", "Lead the standard, stay hands-on where it's risky", "Team & standards — how I'd lead this with a team, not just delegate it");
 
-  const tableRows = [
-    [
-      { text: "Owned by lead", options: { bold: true, color: WHITE, fill: { color: NAVY } } },
-      { text: "Owned by agent (supervised)", options: { bold: true, color: WHITE, fill: { color: NAVY } } },
-    ],
-    [{ text: "Source & metric selection, threshold rationale" }, { text: "Boilerplate scaffolding, extractor implementation" }],
-    [{ text: "Rubric/requirement compliance checking" }, { text: "Test-writing against a locked spec" }],
-    [{ text: "Metric definitions, written before any code" }, { text: "Implementation once spec is approved" }],
-    [{ text: "Data modelling standards — schema shape, what “raw” means literally" }, { text: "Draft schema proposals with tradeoffs surfaced, not silently decided" }],
-    [{ text: "Deciding acceptance criteria for “done”" }, { text: "Running against real data, reporting actual counts — not just “no exception”" }],
+  s.addText(
+    "As lead, I'm accountable for the standard: clear design up front, hands-on involvement where risk is highest, and guardrails that let analysts, engineers, and AI agents deliver safely at pace.",
+    { x: 1.0, y: 1.42, w: 11.33, h: 0.5, fontFace: FONT, fontSize: 12.5, italic: true, color: MUTED, align: "center", valign: "middle" }
+  );
+
+  const colW = 5.9, colGap = 0.33, rowH = 1.85, rowGap = 0.3, x0 = 0.6, y0 = 2.15;
+  const modes = [
+    {
+      label: "Architect", x: x0, y: y0, bg: NAVY, title: WHITE, body: WHITE,
+      text: "Define the data model, layer boundaries, metric definitions, and acceptance criteria before code starts. The raw/silver/curated split and every metric definition in this build were mine — decided before anyone touched implementation.",
+    },
+    {
+      label: "Hands-on engineer", x: x0 + colW + colGap, y: y0, bg: ICE_TINT, title: NAVY, body: INK,
+      text: "Build or co-build the highest-risk parts myself — source contracts, transformation logic, DQ controls, dashboard semantics. Here that meant directing the raw-fidelity fix and sizing the RAG lookback window myself, not just approving someone else's.",
+    },
+    {
+      label: "Quality gate", x: x0, y: y0 + rowH + rowGap, bg: ICE_TINT, title: NAVY, body: INK,
+      text: "Review outputs from analysts, engineers, and agents the same way — against correctness, real data, and definition-of-done — before anything is accepted. That bar is what caught two real DQ bugs and a signal that ran clean but returned zero rows.",
+    },
+    {
+      label: "Coach & scale-enabler", x: x0 + colW + colGap, y: y0 + rowH + rowGap, bg: NAVY, title: WHITE, body: WHITE,
+      text: "Create reusable patterns, design docs, and guardrails so the team delivers consistently without tribal knowledge. The design-doc-before-code gate is the onboarding artifact itself — it's also how I split ownership the moment a second contributor joined mid-build.",
+    },
   ];
-  s.addTable(tableRows, {
-    x: 0.6, y: 1.55, w: 12.13, h: 3.1, fontFace: FONT, fontSize: 11.5, color: INK, border: { type: "solid", color: ICE, pt: 0.75 },
-    autoPage: false, colW: [6.06, 6.07], valign: "middle", rowH: 0.52,
+  modes.forEach((m) => {
+    s.addShape("roundRect", { x: m.x, y: m.y, w: colW, h: rowH, rectRadius: 0.12, fill: { color: m.bg }, line: { type: "none" } });
+    s.addText(m.label, { x: m.x + 0.28, y: m.y + 0.18, w: colW - 0.56, h: 0.4, fontFace: FONT, fontSize: 14, bold: true, color: m.title });
+    s.addText(m.text, { x: m.x + 0.28, y: m.y + 0.62, w: colW - 0.56, h: rowH - 0.8, fontFace: FONT, fontSize: 10.8, color: m.body, lineSpacingMultiple: 1.22, valign: "top" });
   });
-
-  s.addShape("roundRect", { x: 0.6, y: 4.85, w: 5.9, h: 2.15, rectRadius: 0.12, fill: { color: NAVY }, line: { type: "none" } });
-  s.addText("Review was iterative, not one-pass", { x: 0.85, y: 5.0, w: 5.4, h: 0.5, fontFace: FONT, fontSize: 13, bold: true, color: ICE });
-  s.addText(
-    "The RAG rule went through three passes: a first draft, a boundary and near-zero-denominator fix once a real failure mode surfaced, then a lookback-window fix once it ran against real data and returned zero populated rows. Each pass came from checking actual output, not re-reading code.",
-    { x: 0.85, y: 5.5, w: 5.4, h: 1.4, fontFace: FONT, fontSize: 11, color: WHITE, lineSpacingMultiple: 1.25, valign: "top" }
-  );
-
-  s.addShape("roundRect", { x: 6.7, y: 4.85, w: 6.03, h: 2.15, rectRadius: 0.12, fill: { color: ICE_TINT }, line: { type: "none" } });
-  s.addText("How this becomes a handoff model", { x: 6.95, y: 5.0, w: 5.5, h: 0.5, fontFace: FONT, fontSize: 13, bold: true, color: NAVY });
-  s.addText(
-    "Every schema-level decision — metric definitions, then the mart design — went through a written proposal, signed off before code: the artifact I'd hand a new hire or agent to onboard onto this codebase. When a second agent joined mid-build, I split file ownership explicitly, not left it to chance.",
-    { x: 6.95, y: 5.5, w: 5.5, h: 1.4, fontFace: FONT, fontSize: 11, color: INK, lineSpacingMultiple: 1.25, valign: "top" }
-  );
   footer(s, 9, false);
 }
 

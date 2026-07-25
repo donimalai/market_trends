@@ -81,11 +81,12 @@ period_high = window["close"].max()
 period_low = window["close"].min()
 latest_close = window["close"].iloc[-1]
 latest_move_pct = latest["rate_of_change_pct"]
+latest_date_str = latest["date"].strftime("%d %b %Y")
 rag = latest["rag_signal"]
 
 with st.container(horizontal=True):
     st.metric(
-        "Latest close",
+        f"Latest close ({latest_date_str})",
         f"{latest_close:,.0f}",
         f"{latest_move_pct:+.2f}% today" if pd.notna(latest_move_pct) else None,
         border=True,
