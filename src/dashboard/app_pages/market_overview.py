@@ -187,52 +187,34 @@ fig1.update_yaxes(range=[0, volume_cap], row=2, col=1)
 st.plotly_chart(fig1, width="stretch")
 
 # --- Section 2: macro overlay (DASH-3) ---
-# UX fix (analyst feedback #1): dropped the dual-axis, two-line design --
-# reconciling two different scales (price in thousands, rate in single
-# digits) plus a dashed step-line asked for more deliberate interpretation
-# than a glance. Chose option (b): ASX 200 stays the one line on the one
-# axis; the RBA cash rate is shown as shaded background bands (one per
-# rate level, each labeled with the rate) instead of a second full line on
-# a second axis. Reuses the same rate-change-date detection as before.
+# ASX 200 stays on the primary (left) axis; RBA cash rate gets its own
+# secondary (right) axis rather than being rescaled onto the price axis --
+# each series is readable in its native units (points vs. %) without
+# either one needing mental rescaling. Rendered as a step line ("hv"
+# shape), not a straight interpolation, since the cash rate is genuinely
+# constant between RBA decisions and jumps discretely on a change -- a
+# straight line between two rate points would visually imply a gradual
+# move that never happened.
 st.header("Macro overlay: ASX 200 vs RBA cash rate")
 fig2 = go.Figure()
 fig2.add_trace(
     go.Scatter(
         x=window["date"], y=window["close"], name="ASX 200 close",
-        line=dict(color="#1f77b4", width=2),
+        line=dict(color="#1f77b4", width=2), yaxis="y1",
     )
 )
-
-band_source = window[["date", "cash_rate"]].dropna().copy()
-band_source["_rate_group"] = (band_source["cash_rate"].diff().fillna(0) != 0).cumsum()
-# "top left" anchors every label to the chart's shared left edge, so a
-# narrow first band (a rate change just a couple of days into the window)
-# had its label collide with the next band's -- "top" instead centers each
-# label over its own band's actual width, and very narrow bands (< 5
-# trading days) skip the label entirely rather than render illegibly.
-for i, (_, group_df) in enumerate(band_source.groupby("_rate_group")):
-    band_start, band_end = group_df["date"].iloc[0], group_df["date"].iloc[-1]
-    rate_val = group_df["cash_rate"].iloc[0]
-    vrect_kwargs = dict(
-        x0=band_start, x1=band_end,
-        fillcolor="#666666", opacity=0.08 if i % 2 else 0.0, line_width=0,
+fig2.add_trace(
+    go.Scatter(
+        x=window["date"], y=window["cash_rate"], name="RBA cash rate",
+        line=dict(color="#e07b39", width=2, shape="hv"), yaxis="y2",
     )
-    # Omit the annotation_* kwargs entirely for narrow bands, rather than
-    # passing annotation_text=None -- this Plotly version doesn't treat
-    # None as "no annotation" and renders a literal placeholder instead.
-    if len(group_df) >= 5:
-        vrect_kwargs.update(
-            annotation_text=f"{rate_val:.2f}%",
-            annotation_position="top",
-            annotation_font_size=10,
-            annotation_font_color="#666666",
-        )
-    fig2.add_vrect(**vrect_kwargs)
+)
 
 fig2.update_layout(
-    height=380, template="plotly_white", margin=dict(l=40, r=40, t=30, b=20), showlegend=True,
+    height=380, template="plotly_white", margin=dict(l=40, r=50, t=30, b=20), showlegend=True,
+    yaxis=dict(title="ASX 200 close price"),
+    yaxis2=dict(title="RBA cash rate (%)", overlaying="y", side="right", showgrid=False),
 )
-fig2.update_yaxes(title_text="ASX 200 close price")
 st.plotly_chart(fig2, width="stretch")
 
 # Auto-generated summary -- simple rule-based correlation, not ML. Guarded

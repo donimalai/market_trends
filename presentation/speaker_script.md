@@ -92,7 +92,7 @@ Plain-language rule throughout: no function names, no library names, no code. If
 >
 > *[Scroll to price/volume chart]* Price and volume, with that 20-day average overlaid — and notice the volume axis is deliberately capped so a couple of extreme spikes don't flatten out the actual trend.
 >
-> *[Scroll to macro overlay]* This one changed shape during review, worth mentioning: it used to be two lines on two separate scales — price and rate — which technically works but takes real effort to read. Now it's one line, ASX 200, with the cash rate shown as shaded bands in the background, labeled with the rate. Same information, much less translation required.
+> *[Scroll to macro overlay]* Two lines here, each on its own axis in its own native units — ASX 200 in points on the left, the RBA cash rate in percent on the right — so neither series needs mental rescaling against the other. And notice the rate is a step line, not a smooth curve: that's deliberate, because the rate is genuinely flat between RBA decisions and jumps discretely on a change — a straight line between two rate points would visually suggest a gradual move that never happened.
 >
 > *[Scroll to RAG signal]* And the signal itself — today's read, plus a strip underneath showing every day's color for the last 90 days, so you can see at a glance whether it's been calm the whole time or just turned that way yesterday. Those are very different stories.
 >

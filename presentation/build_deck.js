@@ -251,7 +251,7 @@ function sectionHeader(slide, iconFile, title, subtitle) {
   const cards = [
     ["KPI row + bottom-line", "Latest close, 90-day change, range as a ±% band, and current volatility — plus one auto-generated sentence synthesizing all of it. Rule-based, not ML."],
     ["Market activity", "ASX 200 close price and volume, with a 20-day rolling average — outlier-capped y-axis so the trend isn't flattened by spikes."],
-    ["Macro overlay", "ASX 200 on a single axis; the RBA cash rate shown as shaded background bands, not a second line on a second axis — simpler to read at a glance."],
+    ["Macro overlay", "ASX 200 and the RBA cash rate, each on its own axis in its own units — the rate as a step line, since it's genuinely constant between RBA decisions, not smoothly drifting."],
     ["Volatility signal", "The RAG badge for today, plus a day-by-day history strip with an inline legend — “how long has it been this color” at a glance."],
   ];
   cards.forEach((c, i) => {
@@ -287,7 +287,7 @@ function sectionHeader(slide, iconFile, title, subtitle) {
   s.addShape("roundRect", { x: 0.6, y: 4.4, w: 12.13, h: 1.85, rectRadius: 0.12, fill: { color: NAVY }, line: { type: "none" } });
   s.addText("Appendix", { x: 0.9, y: 4.58, w: 11.5, h: 0.4, fontFace: FONT, fontSize: 15, bold: true, color: ICE });
   s.addText(
-    "One plain-language explainer, written for both audiences — the exact formulas behind every KPI, why the macro overlay dropped its dual axis, and precise definitions for every DQ status — all traceable to real table/function names, and kept in sync with docs/metric_definitions.md rather than re-explained twice.",
+    "One plain-language explainer, written for both audiences — the exact formulas behind every KPI, why the macro overlay's cash rate is drawn as a step line rather than a straight interpolation, and precise definitions for every DQ status — all traceable to real table/function names, and kept in sync with docs/metric_definitions.md rather than re-explained twice.",
     { x: 0.9, y: 5.0, w: 11.5, h: 1.15, fontFace: FONT, fontSize: 12, color: WHITE, lineSpacingMultiple: 1.3, valign: "top" }
   );
   footer(s, 7, false);
